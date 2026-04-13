@@ -1,1 +1,2 @@
 留作业的当周就配置好公钥私钥，并且把公钥放到GitHub的New SSH key里面了，现在在这里说明一下
+公钥：ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO8V7r7QtvsX4jJx+v91eI4E2bL5CqPiH/hyFuScq76D Humengping@buaa.edu.cn
