@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+  # 商城前后端服务
+  shop_web:
+    build:
+      context: .
+      dockerfile: Dockerfile.shop
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql_db
+    networks:
+      shop_net:
+    environment:
+      MYSQL_HOST: mysql_db
+      MYSQL_USER: root
+      MYSQL_PWD: root123456
+      MYSQL_DB: shop_db
+      MCP_URL: http://mcp_proxy:8000/api/chat
+
+  # MySQL数据库容器（新增utf8编码环境变量）
+  mysql_db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: shop_db
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    networks:
+      shop_net:
+
+  # MCP代理
+  mcp_proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile.mcp
+    ports:
+      - "8000:8000"
+    networks:
+      shop_net:
+
+  # Ollama大模型
+  ollama_llm:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_model:/root/.ollama
+    networks:
+      shop_net:
+
+volumes:
+  mysql_data:
+  ollama_model:
+networks:
+  shop_net:
+    driver: bridge

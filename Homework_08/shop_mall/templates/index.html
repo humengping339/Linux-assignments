@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>简易线上商城</title>
+</head>
+<body>
+    <h1>商品列表</h1>
+    <div>
+        {% for g in goods %}
+            <div>
+                <h3>{{g[1]}} ￥{{g[2]}} 库存：{{g[3]}}</h3>
+                <button onclick="buy({{g[0]}})">立即购买</button>
+            </div>
+        {% endfor %}
+    </div>
+    <hr>
+    <h2>AI智能客服</h2>
+    <input id="ask" placeholder="输入商品咨询问题">
+    <button onclick="sendChat()">咨询客服</button>
+    <div id="reply"></div>
+
+    <script>
+        function buy(gid){
+            fetch("/buy",{
+                method:"POST",
+                body:new URLSearchParams({"uid":1,"gid":gid,"num":1})
+            }).then(res=>res.json()).then(d=>alert(d.msg))
+        }
+        function sendChat(){
+            let msg = document.getElementById("ask").value
+            fetch("/chat_ai",{
+                method:"POST",
+                body:new URLSearchParams({"msg":msg})
+            }).then(r=>r.json()).then(d=>{
+                document.getElementById("reply").innerText = "客服回复："+d.ans
+            })
+        }
+    </script>
+</body>
+</html>
